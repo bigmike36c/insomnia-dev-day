@@ -21,7 +21,7 @@ router.post("/", (req, res) => {
 
   const newItem = {
     id: Date.now(),
-    name: name,
+    name: trimmedName,
     completed: false,
   };
   items.push(newItem);
@@ -31,6 +31,13 @@ router.post("/", (req, res) => {
 router.put("/:id", (req, res) => {
   const item = items.find((i) => i.id === parseInt(req.params.id));
   if (!item) return res.status(404).send("Item not found");
+  // ✅ Fix: apply the updates
+  if (typeof req.body.name === "string") {
+    item.name = req.body.name.trim(); // Optional: normalize input
+  }
+  if (typeof req.body.completed === "boolean") {
+    item.completed = req.body.completed;
+  }
   res.json(item);
 });
 
