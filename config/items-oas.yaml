@@ -1,0 +1,177 @@
+openapi: 3.0.3
+info:
+  title: Item API
+  version: 1.0.0
+  description: Basic API for creating items in a todo list
+  contact:
+    name: API Support
+    url: https://konghq.com
+
+servers:
+  - url: http://localhost:3000/items
+
+tags:
+  - name: Items
+    description: Operations related to item resources
+
+paths:
+  /:
+    get:
+      summary: Get all items
+      operationId: getItems
+      tags: [Items]
+      description: Retrieve the full list of items.
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Item"
+
+    post:
+      summary: Create a new item
+      operationId: createItem
+      tags: [Items]
+      description: Add a new item to the list.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [name]
+              properties:
+                name:
+                  type: string
+                  example: Buy milk
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Item"
+        "400":
+          description: Name is required
+
+  /{id}:
+    get:
+      summary: Get an item by ID
+      operationId: getItemById
+      tags: [Items]
+      description: Retrieve an item by its unique ID.
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Item"
+        "404":
+          description: Item not found
+
+    put:
+      summary: Update an item by ID
+      operationId: updateItem
+      tags: [Items]
+      description: Replace an item’s data by its ID.
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              properties:
+                name:
+                  type: string
+                completed:
+                  type: boolean
+      responses:
+        "200":
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Item"
+        "404":
+          description: Item not found
+
+    delete:
+      summary: Delete an item by ID
+      operationId: deleteItem
+      tags: [Items]
+      description: Remove an item by ID.
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Deleted
+        "404":
+          description: Item not found
+
+    patch:
+      tags:
+        - Items
+      summary: Partially update an item by ID
+      description: Update one or more fields of an item without replacing the full resource.
+      operationId: patchItem
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  example: "Updated name"
+                completed:
+                  type: boolean
+                  example: true
+      responses:
+        "200":
+          description: Item updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Item"
+        "400":
+          description: Invalid input (e.g., empty name)
+        "404":
+          description: Item not found
+
+components:
+  schemas:
+    Item:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        completed:
+          type: boolean

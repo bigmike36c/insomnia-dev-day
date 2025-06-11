@@ -1,0 +1,72 @@
+_format_version: "3.0"
+services:
+- host: localhost
+  id: 21d1422f-4508-5448-a67b-f542659b4e87
+  name: item-api
+  path: /items
+  plugins: []
+  port: 3000
+  protocol: http
+  routes:
+  - id: f96fd075-618b-5fd2-bf30-02154e7a823c
+    methods:
+    - GET
+    name: item-api_getitems
+    paths:
+    - ~/$
+    plugins: []
+    regex_priority: 200
+    strip_path: false
+    tags: []
+  - id: ff193da2-c102-512a-8002-ddef1049816c
+    methods:
+    - POST
+    name: item-api_createitem
+    paths:
+    - ~/$
+    plugins: []
+    regex_priority: 200
+    strip_path: false
+    tags: []
+  - id: c68b3a1a-b0f8-57e9-b810-52448b9ab6ab
+    methods:
+    - DELETE
+    name: item-api_deleteitem
+    paths:
+    - ~/(?<id>[^#?/]+)$
+    plugins: []
+    regex_priority: 100
+    strip_path: false
+    tags: []
+  - id: 099b5c87-52e8-51f7-bb6d-ecbb8e062842
+    methods:
+    - GET
+    name: item-api_getitembyid
+    paths:
+    - ~/(?<id>[^#?/]+)$
+    plugins: []
+    regex_priority: 100
+    strip_path: false
+    tags: []
+  - id: 020e4bf6-50d3-5537-b4db-7ba755cc5cc1
+    methods:
+    - PATCH
+    name: item-api_patchitem
+    paths:
+    - ~/(?<id>[^#?/]+)$
+    plugins: []
+    regex_priority: 100
+    strip_path: false
+    tags: []
+  - id: 0acd5bf7-7351-576b-a275-d892cbda71b8
+    methods:
+    - PUT
+    name: item-api_updateitem
+    paths:
+    - ~/(?<id>[^#?/]+)$
+    plugins: []
+    regex_priority: 100
+    strip_path: false
+    tags: []
+  tags: []
+upstreams: []

@@ -1,0 +1,6 @@
+patches:
+  - selectors:
+      - $
+    values:
+      _konnect:
+        control_plane_name: "insomnia-dev-day"

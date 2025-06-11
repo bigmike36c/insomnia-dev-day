@@ -1,0 +1,8 @@
+patches:
+  - selectors:
+      - $
+    values:
+      consumers:
+        - keyauth_credentials:
+            - key: secret-key
+          username: nic-cage-consumer
