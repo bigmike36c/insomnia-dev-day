@@ -1,0 +1,446 @@
+type: spec.insomnia.rest/5.0
+name: Insomnia Dev Day
+meta:
+  id: wrk_75c1bdf91eed43f0a45b1835c94e8754
+  created: 1748968450261
+  modified: 1748968450261
+collection:
+  - name: Items Main
+    meta:
+      id: fld_9ae4ba5feb7f4c59a756bfeca5d1b163
+      created: 1748982258032
+      modified: 1749674845047
+      sortKey: -1748982258032
+      description: Operations related to item resources
+    children:
+      - url: "{{ _.base_url }}"
+        name: Get all items
+        meta:
+          id: req_593f6f9c268a45afb1e05220c27834ba
+          created: 1748982258033
+          modified: 1749057485726
+          isPrivate: false
+          description: Retrieve the full list of items.
+          sortKey: -1748982258109
+        method: GET
+        scripts:
+          afterResponse: |-
+            const response = insomnia.response.json();
+            const code = insomnia.response.code
+
+            insomnia.test('Check if status is 200', () => {
+                insomnia.expect(code).to.eql(200);
+            });
+
+            insomnia.test('Check if response is an array', () => {
+                insomnia.expect(response).to.be.a('array');
+            });
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.base_url }}"
+        name: Create a new item
+        meta:
+          id: req_a3af8ce74cec4dc684b37f8d9e504c35
+          created: 1748982258033
+          modified: 1749674293721
+          isPrivate: false
+          description: Add a new item to the list.
+          sortKey: -1748982258134
+        method: POST
+        body:
+          mimeType: application/json
+          text: |-
+            {
+              "name": "{{name}}"
+            }
+        headers:
+          - name: Content-Type
+            disabled: false
+            value: application/json
+        scripts:
+          afterResponse: >+
+            const code = insomnia.response.code;
+
+
+            if (code === 400) {
+              insomnia.test('Check if status is 400 for invalid input', () => {
+                insomnia.expect(code).to.eql(400);
+              });
+
+              insomnia.test('Check if response message matches expected validation error', () => {
+                insomnia.expect(insomnia.response.body).to.equal('Name is required');
+              });
+
+              return; // Don't run success-case assertions
+            }
+
+
+            if (code === 201) {
+              const response = insomnia.response.json();
+
+              insomnia.test('Check if status is 201', () => {
+                insomnia.expect(code).to.eql(201);
+              });
+
+              insomnia.test('Check if response has an id field', () => {
+                insomnia.expect(response).to.have.property('id');
+              });
+            	
+            	insomnia.test('Check if response has a name field matching request body', () => {
+            		insomnia.expect(response).to.have.property('name', insomnia.variables.replaceIn(JSON.parse(insomnia.request.body.raw).name).trim());
+            	});
+            	
+            	insomnia.environment.set("id", response.id);
+            } else {
+              throw new Error(`Unexpected status code: ${code}`);
+            }
+
+
+
+
+
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.base_url }}/{{ _.id }}"
+        name: Get an item by ID
+        meta:
+          id: req_09ce095686a342d2a359536b25ce8c6f
+          created: 1748982258034
+          modified: 1749057468604
+          isPrivate: false
+          description: Retrieve a single item by its ID.
+          sortKey: -1748982258084
+        method: GET
+        scripts:
+          afterResponse: >-
+            const code = insomnia.response.code
+
+
+            if (code === 400) {
+              console.log('Skipping assertions — received expected 400 Bad Request.');
+              return; // Stop here to avoid parsing or running further checks
+            }
+
+
+            if (code === 200) {
+             const response = insomnia.response.json();
+             insomnia.test('Check if status is 200', () => {
+                insomnia.expect(code).to.eql(200);
+            	});
+
+            	insomnia.test('Check if response has an id field', () => {
+            			insomnia.expect(response).to.have.property('id')
+            	});
+
+            	insomnia.test('Check if response has a name field', () => {
+            			insomnia.expect(response).to.have.property('name');
+            	});
+            } else if (code === 404) {
+            		 insomnia.test('When supplying a missing ID, check if status is 404', () => {
+            			 insomnia.expect(code).to.eql(404);
+            		 });
+            		insomnia.test('When supplying a missing ID, expect to receive an item not found message', () => {
+            			insomnia.expect(insomnia.response.body).to.equal('Item not found')
+            		});
+            } else {
+              throw new Error(`Unexpected status code: ${code}`);
+            }
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.base_url }}/{{ _.id }}"
+        name: Delete an item by ID
+        meta:
+          id: req_5f64a409fa08437296561ba8b2a4c828
+          created: 1748982258034
+          modified: 1749058018690
+          isPrivate: false
+          description: Remove an item from the list by its ID.
+          sortKey: -1748982258034
+        method: DELETE
+        scripts:
+          afterResponse: >-
+            const code = insomnia.response.code
+
+
+            if (code === 204) {
+             insomnia.test('Check if status is 204', () => {
+               insomnia.expect(code).to.eql(204);
+              });
+            } else if (code === 404) {
+                insomnia.test('When supplying a missing ID, check if status is 404', () => {
+            			 insomnia.expect(code).to.eql(404);
+            		 });
+            		insomnia.test('When supplying a missing ID, expect to receive an item not found message', () => {
+            			insomnia.expect(insomnia.response.body).to.equal('Item not found')
+            		});
+            } else {
+              throw new Error(`Unexpected status code: ${code}`);
+            }
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.base_url }}/{{ _.id }}"
+        name: Update an item by ID
+        meta:
+          id: req_6fd14da2ff5a4abe9152586ac10b98d6
+          created: 1748982258034
+          modified: 1749057724053
+          isPrivate: false
+          description: Replace an item’s properties using the provided values.
+          sortKey: -1748982258034
+        method: PUT
+        body:
+          mimeType: application/json
+          text: |-
+            {
+              "name": "{{updated_name}}",
+              "completed": true
+            }
+        headers:
+          - name: Content-Type
+            disabled: false
+            value: application/json
+        scripts:
+          afterResponse: >-
+            const code = insomnia.response.code
+
+
+            if (code === 400) {
+              console.log('Skipping assertions — received expected 400 Bad Request.');
+              return; // Stop here to avoid parsing or running further checks
+            }
+
+
+            if (code === 200) {
+             const response = insomnia.response.json();
+             insomnia.test('Check if status is 200', () => {
+               insomnia.expect(code).to.eql(200);
+              });
+
+              insomnia.test('Check if response has an name field', () => {
+                insomnia.expect(response).to.have.property('id');
+              });
+
+              insomnia.test('Check if the name in the response has been properly updated', () => {
+            	  insomnia.expect(response).to.have.property('name', insomnia.variables.replaceIn(JSON.parse(insomnia.request.body.raw).name).trim());
+              });
+
+            	insomnia.test('Check if the completion status in the response has been properly updated', () => {
+            		insomnia.expect(response).to.have.property('completed', JSON.parse(insomnia.request.body.raw).completed)
+            	});
+            } else if (code === 404) {
+            		 insomnia.test('When supplying a missing ID, check if status is 404', () => {
+            			 insomnia.expect(code).to.eql(404);
+            		 });
+            		insomnia.test('When supplying a missing ID, expect to receive an item not found message', () => {
+            			insomnia.expect(insomnia.response.body).to.equal('Item not found')
+            		});
+            } else {
+              throw new Error(`Unexpected status code: ${code}`);
+            }
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+cookieJar:
+  name: Default Jar
+  meta:
+    id: jar_9e7723a90d29c855f47c5557388e9579a6373a8b
+    created: 1748968450264
+    modified: 1749674845045
+environments:
+  name: Base Environment
+  meta:
+    id: env_9e7723a90d29c855f47c5557388e9579a6373a8b
+    created: 1748968450263
+    modified: 1749675192601
+    isPrivate: false
+  data:
+    base_url: "{{ _.scheme }}://{{ _.host }}{{ _.base_path }}"
+  subEnvironments:
+    - name: Main Environment
+      meta:
+        id: env_534ec259ee0e4e6fa077c270808b1e23
+        created: 1749058971235
+        modified: 1749675192601
+        isPrivate: false
+        sortKey: 1749058971235
+      data:
+        base_path: items
+        base_url: "{{ _.protocol }}://{{ _.host }}/{{ _.base_path }}"
+        host: localhost:3000
+        id: 1749059192592
+        name: Sample task
+        protocol: http
+        updated_name: v2_Sample task
+spec:
+  contents:
+    openapi: 3.0.3
+    info:
+      title: Item API
+      version: 1.0.0
+      description: Basic API for creating items in a todo list
+      contact:
+        name: API Support
+        url: https://konghq.com
+    servers:
+      - url: http://localhost:3000/items
+    tags:
+      - name: Items
+        description: Operations related to item resources
+    paths:
+      /:
+        get:
+          summary: Get all items
+          operationId: getItems
+          tags:
+            - Items
+          description: Retrieve the full list of items.
+          responses:
+            "200":
+              description: OK
+              content:
+                application/json:
+                  schema:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Item"
+        post:
+          summary: Create a new item
+          operationId: createItem
+          tags:
+            - Items
+          description: Add a new item to the list.
+          requestBody:
+            required: true
+            content:
+              application/json:
+                schema:
+                  type: object
+                  required:
+                    - name
+                  properties:
+                    name:
+                      type: string
+                      example: Buy milk
+          responses:
+            "201":
+              description: Created
+              content:
+                application/json:
+                  schema:
+                    $ref: "#/components/schemas/Item"
+            "400":
+              description: Name is required
+      /{id}:
+        get:
+          summary: Get an item by ID
+          operationId: getItemById
+          tags:
+            - Items
+          description: Retrieve an item by its unique ID.
+          parameters:
+            - in: path
+              name: id
+              required: true
+              schema:
+                type: integer
+          responses:
+            "200":
+              description: OK
+              content:
+                application/json:
+                  schema:
+                    $ref: "#/components/schemas/Item"
+            "404":
+              description: Item not found
+        put:
+          summary: Update an item by ID
+          operationId: updateItem
+          tags:
+            - Items
+          description: Replace an item’s data by its ID.
+          parameters:
+            - in: path
+              name: id
+              required: true
+              schema:
+                type: integer
+          requestBody:
+            required: true
+            content:
+              application/json:
+                schema:
+                  properties:
+                    name:
+                      type: string
+                    completed:
+                      type: boolean
+          responses:
+            "200":
+              description: Updated
+              content:
+                application/json:
+                  schema:
+                    $ref: "#/components/schemas/Item"
+            "404":
+              description: Item not found
+        delete:
+          summary: Delete an item by ID
+          operationId: deleteItem
+          tags:
+            - Items
+          description: Remove an item by ID.
+          parameters:
+            - in: path
+              name: id
+              required: true
+              schema:
+                type: integer
+          responses:
+            "204":
+              description: Deleted
+            "404":
+              description: Item not found
+    components:
+      schemas:
+        Item:
+          type: object
+          properties:
+            id:
+              type: integer
+            name:
+              type: string
+            completed:
+              type: boolean
+  meta:
+    id: spc_db7f15fd6e2d45a4846234c1a0fd8a30
+    created: 1748968450262
+    modified: 1749675192601
