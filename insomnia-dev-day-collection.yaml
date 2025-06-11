@@ -280,7 +280,7 @@ environments:
   meta:
     id: env_9e7723a90d29c855f47c5557388e9579a6373a8b
     created: 1748968450263
-    modified: 1749675192601
+    modified: 1749677563316
     isPrivate: false
   data:
     base_url: "{{ _.scheme }}://{{ _.host }}{{ _.base_path }}"
@@ -289,7 +289,7 @@ environments:
       meta:
         id: env_534ec259ee0e4e6fa077c270808b1e23
         created: 1749058971235
-        modified: 1749675192601
+        modified: 1749677563316
         isPrivate: false
         sortKey: 1749058971235
       data:
@@ -300,6 +300,21 @@ environments:
         name: Sample task
         protocol: http
         updated_name: v2_Sample task
+    - name: Gateway Environment
+      meta:
+        id: env_8d57063305c44dc48e406bd48c3dbd03
+        created: 1749677567215
+        modified: 1749677577547
+        isPrivate: false
+        sortKey: 1749059232040
+      data:
+        host: localhost:8000
+        protocol: http
+        base_path: items
+        base_url: "{{ _.protocol }}://{{ _.host }}/{{ _.base_path }}"
+        name: Sample task
+        updated_name: v2_Sample task
+        id: 1749059192592
 spec:
   contents:
     openapi: 3.0.3
@@ -443,4 +458,4 @@ spec:
   meta:
     id: spc_db7f15fd6e2d45a4846234c1a0fd8a30
     created: 1748968450262
-    modified: 1749675192601
+    modified: 1749677563316
