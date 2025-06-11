@@ -46,7 +46,11 @@ router.patch("/:id", (req, res) => {
   if (!item) return res.status(404).send("Item not found");
 
   if (typeof req.body.name === "string") {
-    item.name = req.body.name.trim();
+    const trimmedName = req.body.name.trim();
+    if (!trimmedName) {
+      return res.status(400).send("Name is required");
+    }
+    item.name = trimmedName;
   }
   if (typeof req.body.completed === "boolean") {
     item.completed = req.body.completed;
