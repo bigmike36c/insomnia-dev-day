@@ -1,6 +1,57 @@
 patches:
+  # Target CP
   - selectors:
       - $
     values:
       _konnect:
         control_plane_name: "insomnia-dev-day"
+
+  # Update target host and remove base path from service
+  - selectors:
+      - $.services[?(@.name=="item-api")]
+    values:
+      host: host.docker.internal
+    remove:
+      - path
+
+  # Patch GET /
+  - selectors:
+      - $.services[*].routes[?(@.name=="item-api_getitems")]
+    values:
+      paths:
+        - /items
+
+  # Patch POST /
+  - selectors:
+      - $.services[*].routes[?(@.name=="item-api_createitem")]
+    values:
+      paths:
+        - /items
+
+  # Patch DELETE /{id}
+  - selectors:
+      - $.services[*].routes[?(@.name=="item-api_deleteitem")]
+    values:
+      paths:
+        - /items/(?<id>[^#?/]+)$
+
+  # Patch GET /{id}
+  - selectors:
+      - $.services[*].routes[?(@.name=="item-api_getitembyid")]
+    values:
+      paths:
+        - /items/(?<id>[^#?/]+)$
+
+  # Patch PATCH /{id}
+  - selectors:
+      - $.services[*].routes[?(@.name=="item-api_patchitem")]
+    values:
+      paths:
+        - /items/(?<id>[^#?/]+)$
+
+  # Patch PUT /{id}
+  - selectors:
+      - $.services[*].routes[?(@.name=="item-api_updateitem")]
+    values:
+      paths:
+        - /items/(?<id>[^#?/]+)$
