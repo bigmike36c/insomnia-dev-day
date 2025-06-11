@@ -370,6 +370,8 @@ collection:
           isPrivate: false
           description:
             Update one or more fields of an item without replacing the full
+          description:
+            Update one or more fields of an item without replacing the full
             resource.
           sortKey: -1748982258059
         method: PATCH
