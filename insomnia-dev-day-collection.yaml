@@ -270,6 +270,188 @@ collection:
             send: true
             store: true
           rebuildPath: true
+      - url: "{{ _.base_url }}/{{ _.id }}"
+        name: Partially update an item by ID
+        meta:
+          id: req_e32e3b6ef31b488baff7d6055ec6e48c
+          created: 1749674053312
+          modified: 1749674885815
+          isPrivate: false
+          description:
+            Update one or more fields of an item without replacing the full
+            resource.
+          sortKey: -1748982258059
+        method: PATCH
+        body:
+          mimeType: application/json
+          text: |-
+            {
+              "name": "Updated name",
+              "completed": true
+            }
+        headers:
+          - name: Content-Type
+            disabled: false
+            value: application/json
+        scripts:
+          afterResponse: >
+            const code = insomnia.response.code;
+
+
+            // Handle validation error (e.g. empty name)
+
+            if (code === 400) {
+              insomnia.test('Check if status is 400 for invalid input', () => {
+                insomnia.expect(code).to.eql(400);
+              });
+
+              insomnia.test('Check if response message matches expected validation error', () => {
+                insomnia.expect(insomnia.response.body).to.equal('Name is required');
+              });
+
+              return; // Skip success-case assertions
+            }
+
+
+            // Handle not found error (e.g. invalid ID)
+
+            if (code === 404) {
+              insomnia.test('Check if status is 404 for unknown ID', () => {
+                insomnia.expect(code).to.eql(404);
+              });
+
+              insomnia.test('Check if response message matches expected error', () => {
+                insomnia.expect(insomnia.response.body).to.equal('Item not found');
+              });
+
+              return; // Skip success-case assertions
+            }
+
+
+            // Handle successful patch
+
+            if (code === 200) {
+              const response = insomnia.response.json();
+              const requestBody = JSON.parse(insomnia.request.body.raw);
+
+              insomnia.test('Check if status is 200 for successful patch', () => {
+                insomnia.expect(code).to.eql(200);
+              });
+
+              if ('name' in requestBody) {
+                insomnia.test('Check if patched name matches request body', () => {
+                  insomnia.expect(response).to.have.property('name', insomnia.variables.replaceIn(requestBody.name).trim());
+                });
+              }
+
+              if ('completed' in requestBody) {
+                insomnia.test('Check if patched completed field matches request body', () => {
+                  insomnia.expect(response).to.have.property('completed', requestBody.completed);
+                });
+              }
+
+            } else {
+              throw new Error(`Unexpected status code: ${code}`);
+            }
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.base_url }}/{{ _.id }}"
+        name: Partially update an item by ID
+        meta:
+          id: req_e32e3b6ef31b488baff7d6055ec6e48c
+          created: 1749674053312
+          modified: 1749674885815
+          isPrivate: false
+          description:
+            Update one or more fields of an item without replacing the full
+            resource.
+          sortKey: -1748982258059
+        method: PATCH
+        body:
+          mimeType: application/json
+          text: |-
+            {
+              "name": "Updated name",
+              "completed": true
+            }
+        headers:
+          - name: Content-Type
+            disabled: false
+            value: application/json
+        scripts:
+          afterResponse: >
+            const code = insomnia.response.code;
+
+
+            // Handle validation error (e.g. empty name)
+
+            if (code === 400) {
+              insomnia.test('Check if status is 400 for invalid input', () => {
+                insomnia.expect(code).to.eql(400);
+              });
+
+              insomnia.test('Check if response message matches expected validation error', () => {
+                insomnia.expect(insomnia.response.body).to.equal('Name is required');
+              });
+
+              return; // Skip success-case assertions
+            }
+
+
+            // Handle not found error (e.g. invalid ID)
+
+            if (code === 404) {
+              insomnia.test('Check if status is 404 for unknown ID', () => {
+                insomnia.expect(code).to.eql(404);
+              });
+
+              insomnia.test('Check if response message matches expected error', () => {
+                insomnia.expect(insomnia.response.body).to.equal('Item not found');
+              });
+
+              return; // Skip success-case assertions
+            }
+
+
+            // Handle successful patch
+
+            if (code === 200) {
+              const response = insomnia.response.json();
+              const requestBody = JSON.parse(insomnia.request.body.raw);
+
+              insomnia.test('Check if status is 200 for successful patch', () => {
+                insomnia.expect(code).to.eql(200);
+              });
+
+              if ('name' in requestBody) {
+                insomnia.test('Check if patched name matches request body', () => {
+                  insomnia.expect(response).to.have.property('name', insomnia.variables.replaceIn(requestBody.name).trim());
+                });
+              }
+
+              if ('completed' in requestBody) {
+                insomnia.test('Check if patched completed field matches request body', () => {
+                  insomnia.expect(response).to.have.property('completed', requestBody.completed);
+                });
+              }
+
+            } else {
+              throw new Error(`Unexpected status code: ${code}`);
+            }
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
 cookieJar:
   name: Default Jar
   meta:
@@ -281,7 +463,7 @@ environments:
   meta:
     id: env_9e7723a90d29c855f47c5557388e9579a6373a8b
     created: 1748968450263
-    modified: 1749688909486
+    modified: 1749674845047
     isPrivate: false
   data:
     base_url: "{{ _.scheme }}://{{ _.host }}{{ _.base_path }}"
@@ -290,7 +472,7 @@ environments:
       meta:
         id: env_534ec259ee0e4e6fa077c270808b1e23
         created: 1749058971235
-        modified: 1749688909486
+        modified: 1749674845046
         isPrivate: false
         sortKey: 1749058971235
       data:
@@ -445,6 +627,44 @@ spec:
               description: Deleted
             "404":
               description: Item not found
+        patch:
+          tags:
+            - Items
+          summary: Partially update an item by ID
+          description:
+            Update one or more fields of an item without replacing the full
+            resource.
+          operationId: patchItem
+          parameters:
+            - in: path
+              name: id
+              required: true
+              schema:
+                type: integer
+          requestBody:
+            required: true
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    name:
+                      type: string
+                      example: Updated name
+                    completed:
+                      type: boolean
+                      example: true
+          responses:
+            "200":
+              description: Item updated successfully
+              content:
+                application/json:
+                  schema:
+                    $ref: "#/components/schemas/Item"
+            "400":
+              description: Invalid input (e.g., empty name)
+            "404":
+              description: Item not found
     components:
       schemas:
         Item:
@@ -459,4 +679,4 @@ spec:
   meta:
     id: spc_db7f15fd6e2d45a4846234c1a0fd8a30
     created: 1748968450262
-    modified: 1749688909486
+    modified: 1749674017477
