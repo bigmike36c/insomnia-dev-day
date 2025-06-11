@@ -41,9 +41,23 @@ router.put("/:id", (req, res) => {
   res.json(item);
 });
 
-router.delete("/:id", (req, res) => {
+router.patch("/:id", (req, res) => {
   const item = items.find((i) => i.id === parseInt(req.params.id));
   if (!item) return res.status(404).send("Item not found");
+
+  if (typeof req.body.name === "string") {
+    item.name = req.body.name.trim();
+  }
+  if (typeof req.body.completed === "boolean") {
+    item.completed = req.body.completed;
+  }
+
+  res.json(item);
+});
+
+router.delete("/:id", (req, res) => {
+  const item = items.find((i) => i.id === parseInt(req.params.id));
+  if (!item) return res.status(404).type("text/plain").send("Item not found");
   items = items.filter((i) => i.id !== parseInt(req.params.id));
   res.status(204).send();
 });
