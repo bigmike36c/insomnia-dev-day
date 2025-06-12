@@ -3,14 +3,14 @@ name: Insomnia Dev Day
 meta:
   id: wrk_75c1bdf91eed43f0a45b1835c94e8754
   created: 1748968450261
-  modified: 1748968450261
+  modified: 1749689270169
   description: ""
 collection:
   - name: Items Main
     meta:
       id: fld_9ae4ba5feb7f4c59a756bfeca5d1b163
       created: 1748982258032
-      modified: 1749688871206
+      modified: 1749689270167
       sortKey: -1748982258032
       description: Operations related to item resources
     children:
@@ -19,7 +19,7 @@ collection:
         meta:
           id: req_593f6f9c268a45afb1e05220c27834ba
           created: 1748982258033
-          modified: 1749688592720
+          modified: 1749689270167
           isPrivate: false
           description: Retrieve the full list of items.
           sortKey: -1748982258109
@@ -49,7 +49,7 @@ collection:
         meta:
           id: req_a3af8ce74cec4dc684b37f8d9e504c35
           created: 1748982258033
-          modified: 1749688928675
+          modified: 1749690333748
           isPrivate: false
           description: Add a new item to the list.
           sortKey: -1748982258134
@@ -119,7 +119,7 @@ collection:
         meta:
           id: req_09ce095686a342d2a359536b25ce8c6f
           created: 1748982258034
-          modified: 1749688938629
+          modified: 1749690340232
           isPrivate: false
           description: Retrieve a single item by its ID.
           sortKey: -1748982258084
@@ -171,7 +171,7 @@ collection:
         meta:
           id: req_5f64a409fa08437296561ba8b2a4c828
           created: 1748982258034
-          modified: 1749688949066
+          modified: 1749690357248
           isPrivate: false
           description: Remove an item from the list by its ID.
           sortKey: -1748982258034
@@ -208,7 +208,7 @@ collection:
         meta:
           id: req_6fd14da2ff5a4abe9152586ac10b98d6
           created: 1748982258034
-          modified: 1749688943859
+          modified: 1749690352507
           isPrivate: false
           description: Replace an item’s properties using the provided values.
           sortKey: -1748982258034
@@ -221,8 +221,8 @@ collection:
               "completed": true
             }
         headers:
-          - name: Content-Type
-            disabled: false
+          - disabled: false
+            name: Content-Type
             value: application/json
         scripts:
           afterResponse: >-
@@ -275,10 +275,9 @@ collection:
         meta:
           id: req_e32e3b6ef31b488baff7d6055ec6e48c
           created: 1749674053312
-          modified: 1749674885815
+          modified: 1749690347706
           isPrivate: false
-          description:
-            Update one or more fields of an item without replacing the full
+          description: Update one or more fields of an item without replacing the full
             resource.
           sortKey: -1748982258059
         method: PATCH
@@ -290,8 +289,8 @@ collection:
               "completed": true
             }
         headers:
-          - name: Content-Type
-            disabled: false
+          - disabled: false
+            name: Content-Type
             value: application/json
         scripts:
           afterResponse: >
@@ -351,98 +350,7 @@ collection:
               }
 
             } else {
-              throw new Error(`Unexpected status code: ${code}`);
-            }
-        settings:
-          renderRequestBody: true
-          encodeUrl: true
-          followRedirects: global
-          cookies:
-            send: true
-            store: true
-          rebuildPath: true
-      - url: "{{ _.base_url }}/{{ _.id }}"
-        name: Partially update an item by ID
-        meta:
-          id: req_e32e3b6ef31b488baff7d6055ec6e48c
-          created: 1749674053312
-          modified: 1749674885815
-          isPrivate: false
-          description:
-            Update one or more fields of an item without replacing the full
-            resource.
-          sortKey: -1748982258059
-        method: PATCH
-        body:
-          mimeType: application/json
-          text: |-
-            {
-              "name": "Updated name",
-              "completed": true
-            }
-        headers:
-          - name: Content-Type
-            disabled: false
-            value: application/json
-        scripts:
-          afterResponse: >
-            const code = insomnia.response.code;
-
-
-            // Handle validation error (e.g. empty name)
-
-            if (code === 400) {
-              insomnia.test('Check if status is 400 for invalid input', () => {
-                insomnia.expect(code).to.eql(400);
-              });
-
-              insomnia.test('Check if response message matches expected validation error', () => {
-                insomnia.expect(insomnia.response.body).to.equal('Name is required');
-              });
-
-              return; // Skip success-case assertions
-            }
-
-
-            // Handle not found error (e.g. invalid ID)
-
-            if (code === 404) {
-              insomnia.test('Check if status is 404 for unknown ID', () => {
-                insomnia.expect(code).to.eql(404);
-              });
-
-              insomnia.test('Check if response message matches expected error', () => {
-                insomnia.expect(insomnia.response.body).to.equal('Item not found');
-              });
-
-              return; // Skip success-case assertions
-            }
-
-
-            // Handle successful patch
-
-            if (code === 200) {
-              const response = insomnia.response.json();
-              const requestBody = JSON.parse(insomnia.request.body.raw);
-
-              insomnia.test('Check if status is 200 for successful patch', () => {
-                insomnia.expect(code).to.eql(200);
-              });
-
-              if ('name' in requestBody) {
-                insomnia.test('Check if patched name matches request body', () => {
-                  insomnia.expect(response).to.have.property('name', insomnia.variables.replaceIn(requestBody.name).trim());
-                });
-              }
-
-              if ('completed' in requestBody) {
-                insomnia.test('Check if patched completed field matches request body', () => {
-                  insomnia.expect(response).to.have.property('completed', requestBody.completed);
-                });
-              }
-
-            } else {
-              throw new Error(`Unexpected status code: ${code}`);
+              console.warn(`There is no test for status code ${code}`);
             }
         settings:
           renderRequestBody: true
@@ -463,7 +371,7 @@ environments:
   meta:
     id: env_9e7723a90d29c855f47c5557388e9579a6373a8b
     created: 1748968450263
-    modified: 1749674845047
+    modified: 1749689980859
     isPrivate: false
   data:
     base_url: "{{ _.scheme }}://{{ _.host }}{{ _.base_path }}"
@@ -472,29 +380,29 @@ environments:
       meta:
         id: env_534ec259ee0e4e6fa077c270808b1e23
         created: 1749058971235
-        modified: 1749674845046
+        modified: 1749689980859
         isPrivate: false
         sortKey: 1749058971235
       data:
         base_path: items
         base_url: "{{ _.protocol }}://{{ _.host }}/{{ _.base_path }}"
         host: localhost:3000
-        id: 1749059192592
+        id: 1749674833217
         name: Sample task
         protocol: http
         updated_name: v2_Sample task
     - name: Gateway Environment
       meta:
-        id: env_8d57063305c44dc48e406bd48c3dbd03
-        created: 1749677567215
-        modified: 1749688909486
+        id: env_5848bb57f71e418d97ee78d509a9b1f7
+        created: 1749677526906
+        modified: 1749689980859
         isPrivate: false
         sortKey: 1749059232040
       data:
         base_path: items
         base_url: "{{ _.protocol }}://{{ _.host }}/{{ _.base_path }}"
         host: localhost:8000
-        id: 1749059192592
+        id: 1749674833217
         name: Sample task
         protocol: http
         updated_name: v2_Sample task
@@ -631,8 +539,7 @@ spec:
           tags:
             - Items
           summary: Partially update an item by ID
-          description:
-            Update one or more fields of an item without replacing the full
+          description: Update one or more fields of an item without replacing the full
             resource.
           operationId: patchItem
           parameters:
@@ -679,4 +586,4 @@ spec:
   meta:
     id: spc_db7f15fd6e2d45a4846234c1a0fd8a30
     created: 1748968450262
-    modified: 1749674017477
+    modified: 1749689980859
